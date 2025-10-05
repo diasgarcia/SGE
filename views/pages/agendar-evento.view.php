@@ -5,6 +5,13 @@
 # conforme o tipo de evento selecionado.
 #
 ?>
+<!-- CSS específico -->
+<link rel="stylesheet" href="/css/calendar.css">
+
+<!-- JavaScript necessário -->
+<script src="/js/calendar.js" defer></script>
+<script src="/js/event-form.js" defer></script>
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -147,27 +154,43 @@
                                         <i class="bi bi-people"></i> Informações do Evento Não Esportivo
                                     </h5>
                                 </div>
+
                                 <div class="col-md-6 mb-3">
                                     <label for="subtipo_evento_nao_esp" class="form-label">Tipo de Evento *</label>
-                                    <select name="subtipo_evento_nao_esp" id="subtipo_evento_nao_esp" class="form-select">
+                                    <select name="subtipo_evento_nao_esp" id="subtipo_evento_nao_esp" class="form-select" required>
                                         <option value="">-- Selecione --</option>
-                                        <option value="palestra">Palestra</option>
-                                        <option value="workshop">Workshop</option>
-                                        <option value="formatura">Formatura</option>
-                                        <option value="seminario">Seminário</option>
-                                        <option value="conferencia">Conferência</option>
-                                        <option value="outro">Outro</option>
+                                        <?php
+                                        $tipos_evento = [
+                                            'palestra' => 'Palestra',
+                                            'workshop' => 'Workshop',
+                                            'formatura' => 'Formatura',
+                                            'seminario' => 'Seminário',
+                                            'conferencia' => 'Conferência',
+                                            'outro' => 'Outro'
+                                        ];
+
+                                        foreach ($tipos_evento as $valor => $label): ?>
+                                            <option value="<?php echo $valor; ?>"><?php echo $label; ?></option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
+
+                                <div class="col-md-6 mb-3" id="campo_outro_tipo" style="display: none;">
+                                    <label for="outro_tipo_evento" class="form-label">Qual o tipo do evento? *</label>
+                                    <input type="text" name="outro_tipo_evento" id="outro_tipo_evento" class="form-control"
+                                        placeholder="Ex: Apresentação de TCC">
+                                </div>
+
                                 <div class="col-md-6 mb-3">
                                     <label for="estimativa_participantes" class="form-label">Estimativa de Participantes *</label>
-                                    <input type="number" name="estimativa_participantes" id="estimativa_participantes" class="form-control" min="1" max="500" placeholder="Ex: 100">
+                                    <input type="number" name="estimativa_participantes" id="estimativa_participantes" class="form-control" min="1" max="500" placeholder="Ex: 100" required>
                                 </div>
+
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Evento aberto ao público? *</label>
                                     <div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="evento_aberto_publico" id="publico_sim" value="1">
+                                            <input class="form-check-input" type="radio" name="evento_aberto_publico" id="publico_sim" value="1" required>
                                             <label class="form-check-label" for="publico_sim">Sim</label>
                                         </div>
                                         <div class="form-check form-check-inline">
@@ -176,20 +199,24 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-6 mb-3" id="campo_publico_alvo" style="display: none;">
                                     <label for="descricao_publico_alvo" class="form-label">Quem pode participar?</label>
                                     <input type="text" name="descricao_publico_alvo" id="descricao_publico_alvo" class="form-control" placeholder="Ex: Alunos do curso de Engenharia">
                                 </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="alert alert-warning">
-                                        <i class="bi bi-exclamation-triangle"></i>
-                                        <strong>Importante:</strong> A supervisão do acesso é responsabilidade do organizador.
-                                    </div>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    <strong>Importante:</strong> A supervisão do acesso é responsabilidade do organizador.
                                 </div>
-                                <div class="col-md-12 mb-3">
-                                    <label for="infraestrutura_adicional" class="form-label">Infraestrutura Adicional</label>
-                                    <textarea name="infraestrutura_adicional" id="infraestrutura_adicional" class="form-control" rows="3" placeholder="Ex: som, palco, decoração, projetor..."></textarea>
-                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="infraestrutura_adicional" class="form-label">Infraestrutura Adicional</label>
+                                <textarea name="infraestrutura_adicional" id="infraestrutura_adicional" class="form-control" rows="3" placeholder="Ex: som, palco, decoração, projetor..."></textarea>
                             </div>
                         </div>
 
@@ -224,86 +251,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tipoAgendamento = document.getElementById('tipo_agendamento');
-        const camposEsportivos = document.getElementById('campos_esportivos');
-        const camposNaoEsportivos = document.getElementById('campos_nao_esportivos');
-        const possuiMateriais = document.getElementsByName('possui_materiais');
-        const camposSemMateriais = document.getElementById('campos_sem_materiais');
-        const eventoAberto = document.getElementsByName('evento_aberto_publico');
-        const campoPublicoAlvo = document.getElementById('campo_publico_alvo');
-
-        tipoAgendamento.addEventListener('change', function() {
-            const subtipo1 = document.getElementById('subtipo_evento');
-            const subtipo2 = document.getElementById('subtipo_evento_nao_esp');
-
-            if (this.value === 'esportivo') {
-                camposEsportivos.style.display = 'block';
-                camposNaoEsportivos.style.display = 'none';
-                subtipo1.required = true;
-                document.getElementById('esporte_tipo').required = true;
-                document.getElementById('lista_participantes').required = true;
-                document.getElementById('estimativa_participantes_esp').required = true;
-                subtipo2.required = false;
-                document.getElementById('estimativa_participantes').required = false;
-            } else if (this.value === 'nao_esportivo') {
-                camposEsportivos.style.display = 'none';
-                camposNaoEsportivos.style.display = 'block';
-                subtipo2.required = true;
-                document.getElementById('estimativa_participantes').required = true;
-                subtipo1.required = false;
-                document.getElementById('esporte_tipo').required = false;
-                document.getElementById('lista_participantes').required = false;
-                document.getElementById('estimativa_participantes_esp').required = false;
-            } else {
-                camposEsportivos.style.display = 'none';
-                camposNaoEsportivos.style.display = 'none';
-            }
-        });
-
-        possuiMateriais.forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                if (this.value === '0') {
-                    camposSemMateriais.style.display = 'block';
-                    document.getElementById('materiais_necessarios').required = true;
-                    document.getElementById('responsabiliza_devolucao').required = true;
-                } else {
-                    camposSemMateriais.style.display = 'none';
-                    document.getElementById('materiais_necessarios').required = false;
-                    document.getElementById('responsabiliza_devolucao').required = false;
-                }
-            });
-        });
-
-        eventoAberto.forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                if (this.value === '0') {
-                    campoPublicoAlvo.style.display = 'block';
-                } else {
-                    campoPublicoAlvo.style.display = 'none';
-                }
-            });
-        });
-
-        document.getElementById('agendamentoForm').addEventListener('submit', function() {
-            const tipoSelecionado = tipoAgendamento.value;
-            if (tipoSelecionado === 'esportivo') {
-                const subtipoEsp = document.getElementById('subtipo_evento').value;
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'subtipo_evento';
-                hiddenInput.value = subtipoEsp;
-                this.appendChild(hiddenInput);
-            } else if (tipoSelecionado === 'nao_esportivo') {
-                const subtipoNaoEsp = document.getElementById('subtipo_evento_nao_esp').value;
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'subtipo_evento';
-                hiddenInput.value = subtipoNaoEsp;
-                this.appendChild(hiddenInput);
-            }
-        });
-    });
-</script>
